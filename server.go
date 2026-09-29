@@ -13,7 +13,7 @@ import (
 )
 
 const ReaderBufferSize = 65536
-const WriterBufferSize = 65536
+const WriterBufferSize = 131072
 
 type Server struct {
 	rd   *bufio.Reader

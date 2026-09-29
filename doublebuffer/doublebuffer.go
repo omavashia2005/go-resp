@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"sync"
-	"time"
 )
 
 var bytesPool sync.Pool = sync.Pool{
@@ -49,9 +48,6 @@ func (db *DoubleBuffer) flusher(wr io.Writer) {
 	defer bytesPool.Put(frontBuffer)
 
 	for range db.dataReadyFlag {
-		
-		time.Sleep(10 * time.Millisecond)
-
 		db.bufferMutex.Lock()
 		frontBuffer, db.backBuffer = db.backBuffer, frontBuffer[:0]
 		db.bufferMutex.Unlock()
