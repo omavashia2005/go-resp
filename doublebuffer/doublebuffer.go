@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"sync"
+	"time"
 )
 
 var bytesPool sync.Pool = sync.Pool{
@@ -48,6 +49,9 @@ func (db *DoubleBuffer) flusher(wr io.Writer) {
 	defer bytesPool.Put(frontBuffer)
 
 	for range db.dataReadyFlag {
+		
+		time.Sleep(10 * time.Millisecond)
+
 		db.bufferMutex.Lock()
 		frontBuffer, db.backBuffer = db.backBuffer, frontBuffer[:0]
 		db.bufferMutex.Unlock()
@@ -83,6 +87,8 @@ func (db *DoubleBuffer) Close() error {
 }
 
 func (db *DoubleBuffer) Write(p []byte) (n int, err error) {
+	// TODO: This is recursive.
+	// While not my first priority, this is def something that needs to become iterative later down the road
 	if len(p) > db.bufferLimit {
 		totalWritten := 0
 		for len(p) > 0 {
